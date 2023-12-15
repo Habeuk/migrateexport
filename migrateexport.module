@@ -1,0 +1,37 @@
+<?php
+use Stephane888\Debug\debugLog;
+use Drupal\migrateexport\Services\ManageNodes;
+
+function migrateexport_menu() {
+  $items = [];
+  $items['migrateexport'] = array(
+    'title' => 'Books View',
+    'description' => 'Books Information',
+    'page callback' => 'migrateexport_callback',
+    'access callback' => true
+    // 'delivery callback' => 'restful_delivery',
+    // 'type' => MENU_CALLBACK
+  );
+  return $items;
+}
+
+/**
+ *
+ * @return string[]
+ */
+function migrateexport_callback() {
+  $ManageNodes = new ManageNodes();
+  $ManageNodes->loadAllTypes();
+  return drupal_json_output([
+    'time' => time()
+  ]);
+}
+
+/**
+ * Implémente hook_init().
+ */
+function migrateexport_init() {
+  if (current_path() == 'migrateexport') {
+    drupal_page_is_cacheable(FALSE);
+  }
+}

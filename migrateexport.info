@@ -1,0 +1,7 @@
+name = Migrate export
+description = Permet d'exposer les données pour la migration.
+core = 7.x
+dependencies[] = restful
+
+registry_autoload[] = PSR-0
+registry_autoload[] = PSR-4
