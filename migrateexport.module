@@ -21,10 +21,9 @@ function migrateexport_menu() {
  */
 function migrateexport_callback() {
   $ManageNodes = new ManageNodes();
-  $ManageNodes->loadAllTypes();
-  return drupal_json_output([
-    'time' => time()
-  ]);
+  $results = $ManageNodes->loadAllTypes();
+  $results['time'] = time();
+  return drupal_json_output($results);
 }
 
 /**
