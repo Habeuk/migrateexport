@@ -1,0 +1,14 @@
+{
+    "name": "habeuk/migrateexport",
+    "description": "helop to export drupal data D7 to D9",
+    "type": "drupal-custom-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "kouwa stephane",
+            "email": "kksasteph888@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
