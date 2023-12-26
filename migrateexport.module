@@ -9,9 +9,13 @@ function migrateexport_menu() {
     'description' => 'Books Information',
     'page callback' => 'migrateexport_callback',
     'access callback' => true
-    // 'delivery callback' => 'restful_delivery',
-    // 'type' => MENU_CALLBACK
   );
+  $items['export-import-entities/show-site-config'] = [
+    'title' => 'Books View',
+    'description' => 'Books Information',
+    'page callback' => 'migrateexport_site_info_callback',
+    'access callback' => true
+  ];
   return $items;
 }
 
@@ -26,11 +30,17 @@ function migrateexport_callback() {
   return drupal_json_output($results);
 }
 
+function migrateexport_site_info_callback() {
+  $results = [];
+  $results['time'] = time();
+  return drupal_json_output($results);
+}
+
 /**
  * Implémente hook_init().
  */
 function migrateexport_init() {
-  if (current_path() == 'migrateexport') {
+  if (current_path() == 'migrateexport' || current_path() == 'export-import-entities/show-site-config') {
     drupal_page_is_cacheable(FALSE);
   }
 }
