@@ -54,7 +54,7 @@ function migrateexport_callback() {
 function migrateexport_site_info_callback() {
   $ManageNodes = new ManageNodes();
   $results = $ManageNodes->loadAllTypes();
-  $results['time'] = time();
+  $results['time2'] = time();
   return drupal_json_output($results);
 }
 

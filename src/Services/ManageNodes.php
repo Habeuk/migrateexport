@@ -10,7 +10,7 @@ use Drupal\migrateexport\Services\Exception\ExceptionMigrate;
  * @author stephane
  *        
  */
-class ManageNodes {
+class ManageNodes extends ManageEntities {
   
   /**
    * Un tableau contenant les key=> valeurs de types de nodes.
@@ -65,34 +65,6 @@ class ManageNodes {
     $results['node'] = $this->loadResumeEntityType('node', $this->listNames);
     $results['user'] = $this->loadResumeEntityType('user');
     // $results['field_info'] = field_info_instances();
-    return $results;
-  }
-  
-  protected function loadResumeEntityType($entity_type_id = 'node', $bundles = []) {
-    $results = [];
-    if ($bundles) {
-      foreach ($bundles as $bundle => $label) {
-        $query = new \EntityFieldQuery();
-        $query->entityCondition('entity_type', $entity_type_id, '=')->propertyCondition('type', $bundle, '=');
-        $result = $query->count()->execute();
-        $results[$bundle] = [
-          'label' => $label,
-          'count' => $result,
-          'fields' => $this->filterField($entity_type_id, $bundle)
-        ];
-      }
-    }
-    else {
-      $bundle = $entity_type_id;
-      $query = new \EntityFieldQuery();
-      $query->entityCondition('entity_type', $entity_type_id, '=');
-      $result = $query->count()->execute();
-      $results[$bundle] = [
-        'label' => $label,
-        'count' => $result,
-        'fields' => $this->filterField($entity_type_id, $bundle)
-      ];
-    }
     return $results;
   }
   
