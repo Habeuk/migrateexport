@@ -25,6 +25,14 @@ class ManageNodes extends ManageEntities {
    */
   protected $listTypes = [];
   
+  /**
+   * il faudra tester cette fonction et voir ce quelle renvoie vs
+   * loadFullDefinitionOfentity.
+   *
+   * @param string $entity_type_id
+   * @param string $bundle
+   * @return array
+   */
   function loadEntities(string $entity_type_id, string $bundle) {
     $query = new \EntityFieldQuery();
     $query->entityCondition('entity_type', $entity_type_id, '=')->propertyCondition('type', $bundle, '=');
@@ -65,26 +73,6 @@ class ManageNodes extends ManageEntities {
     $results['node'] = $this->loadResumeEntityType('node', $this->listNames);
     $results['user'] = $this->loadResumeEntityType('user');
     // $results['field_info'] = field_info_instances();
-    return $results;
-  }
-  
-  /**
-   *
-   * @param string $entity_type_id
-   * @param string $bundle
-   * @return array
-   */
-  protected function filterField($entity_type_id, $bundle) {
-    $fields = field_info_instances($entity_type_id, $bundle);
-    // self::debug($fields, $entity_type_id . '--' . $bundle);
-    $results = [];
-    foreach ($fields as $field_name => $field) {
-      $results[$field_name] = [
-        'label' => $field['label']
-      ];
-      if (isset($field['widget']))
-        $results[$field_name]['widget'] = $field['widget'];
-    }
     return $results;
   }
   

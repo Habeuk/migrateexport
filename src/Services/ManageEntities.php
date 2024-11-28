@@ -67,4 +67,24 @@ class ManageEntities {
     }
     return $results;
   }
+  
+  /**
+   *
+   * @param string $entity_type_id
+   * @param string $bundle
+   * @return array
+   */
+  protected function filterField($entity_type_id, $bundle) {
+    $fields = field_info_instances($entity_type_id, $bundle);
+    // self::debug($fields, $entity_type_id . '--' . $bundle);
+    $results = [];
+    foreach ($fields as $field_name => $field) {
+      $results[$field_name] = [
+        'label' => $field['label']
+      ];
+      if (isset($field['widget']))
+        $results[$field_name]['widget'] = $field['widget'];
+    }
+    return $results;
+  }
 }
