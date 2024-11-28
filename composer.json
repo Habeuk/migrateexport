@@ -1,7 +1,7 @@
 {
     "name": "habeuk/migrateexport",
     "description": "helop to export drupal data D7 to D9",
-    "type": "drupal-custom-module",
+    "type": "drupal-module",
     "license": "MIT",
     "authors": [
         {

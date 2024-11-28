@@ -10,6 +10,16 @@ function migrateexport_menu() {
     'page callback' => 'migrateexport_callback',
     'access callback' => true
   );
+  $items['migrate-export-entities/%/%'] = array(
+    'title' => 'Books View',
+    'description' => 'Books Information',
+    'page callback' => 'migrateexport_entitities_callback',
+    'page arguments' => array(
+      'entity_type_id' => 1,
+      'bundle' => 2
+    ),
+    'access callback' => true
+  );
   $items['export-import-entities/show-site-config'] = [
     'title' => 'Books View',
     'description' => 'Books Information',
@@ -17,6 +27,17 @@ function migrateexport_menu() {
     'access callback' => true
   ];
   return $items;
+}
+
+/**
+ * --
+ *
+ * @param string $entity_type_id
+ * @param string $bundle
+ */
+function migrateexport_entitities_callback($entity_type_id, $bundle) {
+  $ManageNodes = new ManageNodes();
+  return drupal_json_output($ManageNodes->loadEntities($entity_type_id, $bundle));
 }
 
 /**
