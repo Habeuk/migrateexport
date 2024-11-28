@@ -4,28 +4,27 @@ namespace Drupal\migrateexport\Services;
 
 use Stephane888\Debug\debugLog;
 use Drupal\migrateexport\Services\Exception\ExceptionMigrate;
-use Kint\Kint;
 
 /**
  *
  * @author stephane
- *
+ *        
  */
 class ManageNodes {
-
+  
   /**
    * Un tableau contenant les key=> valeurs de types de nodes.
    *
    * @var array
    */
   protected $listNames = [];
-
+  
   /**
    *
    * @var array
    */
   protected $listTypes = [];
-
+  
   function loadEntities(string $entity_type_id, string $bundle) {
     $query = new \EntityFieldQuery();
     $query->entityCondition('entity_type', $entity_type_id, '=')->propertyCondition('type', $bundle, '=');
@@ -46,7 +45,7 @@ class ManageNodes {
     // $this->debug($entities, 'loadEntities', true);
     return $entities;
   }
-
+  
   /**
    * Charge tous les types de nodes.
    */
@@ -68,7 +67,7 @@ class ManageNodes {
     // $results['field_info'] = field_info_instances();
     return $results;
   }
-
+  
   protected function loadResumeEntityType($entity_type_id = 'node', $bundles = []) {
     $results = [];
     if ($bundles) {
@@ -96,7 +95,7 @@ class ManageNodes {
     }
     return $results;
   }
-
+  
   /**
    *
    * @param string $entity_type_id
@@ -116,11 +115,11 @@ class ManageNodes {
     }
     return $results;
   }
-
+  
   static function debug($data, $filename, $auto = false) {
-    debugLog::$path = 'siteweb/itietogo/drupal7/web/sites/all/themes/logs';
+    $rrotPath = base_path();
+    debugLog::$path = drupal_get_path('theme', 'ddf');
     debugLog::$max_depth = 10;
     debugLog::logger($data, $filename, $auto, 'kint', '');
   }
-
 }
