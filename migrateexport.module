@@ -52,13 +52,15 @@ function migrateexport_callback() {
 }
 
 function migrateexport_site_info_callback() {
-  $results = [];
+  $ManageNodes = new ManageNodes();
+  $results = $ManageNodes->loadAllTypes();
   $results['time'] = time();
   return drupal_json_output($results);
 }
 
 /**
  * Implémente hook_init().
+ * Desactive le cache sur les routes suivantes.
  */
 function migrateexport_init() {
   if (current_path() == 'migrateexport' || current_path() == 'export-import-entities/show-site-config') {

@@ -116,10 +116,9 @@ class ManageNodes {
     return $results;
   }
   
-  static function debug($data, $filename, $auto = false) {
-    $rrotPath = base_path();
-    debugLog::$path = drupal_get_path('theme', 'ddf');
-    debugLog::$max_depth = 10;
+  static function debug($data, $filename, $auto = false, $max_depth = 5) {
+    debugLog::$path = DRUPAL_ROOT . '/sites/logs';
+    debugLog::$max_depth = 5;
     debugLog::logger($data, $filename, $auto, 'kint', '');
   }
 }
