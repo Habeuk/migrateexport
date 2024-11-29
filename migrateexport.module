@@ -5,28 +5,28 @@ use Drupal\migrateexport\Services\ManageEntities;
 
 function migrateexport_menu() {
   $items = [];
-  // $items['migrateexport/entities-definition'] = array(
-  // 'title' => "Reupere toutes les definitions d'entites",
-  // 'description' => "Reupere toutes les definitions d'entites",
-  // 'page callback' => 'migrateexport_entities_definition_callback',
-  // 'access callback' => true
-  // );
-  // $items['migrateexport/migrate-export-entities/%'] = array(
-  // 'title' => "Recupere la definition d'une entité",
-  // 'description' => "Recupere la definition d'une entité, y compris les
-  // bunbles ...",
-  // 'page callback' => 'migrateexport_entitity_definition_callback',
-  // 'page arguments' => [
-  // 'entity_type_id' => 2
-  // ],
-  // 'access callback' => true
-  // );
-  // $items['migrateexport/export-import-entities/show-site-config'] = [
-  // 'title' => 'Books View',
-  // 'description' => 'Books Information',
-  // 'page callback' => 'migrateexport_site_info_callback',
-  // 'access callback' => true
-  // ];
+  $items['migrateexport/entities-definition'] = array(
+    'title' => "Reupere toutes les definitions d'entites",
+    'description' => "Reupere toutes les definitions d'entites",
+    'page callback' => 'migrateexport_entities_definition_callback',
+    'access callback' => true
+  );
+  $items['migrateexport/migrate-export-entities/%'] = array(
+    'title' => "Recupere la definition d'une entité",
+    'description' => "Recupere la definition d'une entité, y compris les
+  bunbles ...",
+    'page callback' => 'migrateexport_entitity_definition_callback',
+    'page arguments' => [
+      'entity_type_id' => 2
+    ],
+    'access callback' => true
+  );
+  $items['migrateexport/export-import-entities/show-site-config'] = [
+    'title' => 'Books View',
+    'description' => 'Books Information',
+    'page callback' => 'migrateexport_site_info_callback',
+    'access callback' => true
+  ];
   return $items;
 }
 
@@ -62,7 +62,7 @@ function migrateexport_site_info_callback() {
  * Desactive le cache sur les routes suivantes.
  */
 function migrateexport_init() {
-  // if (str_contains(current_path(), "migrateexport")) {
-  // drupal_page_is_cacheable(FALSE);
-  // }
+  if (str_contains(current_path(), "migrateexport")) {
+    drupal_page_is_cacheable(FALSE);
+  }
 }
