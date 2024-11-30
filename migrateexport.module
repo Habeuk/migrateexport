@@ -5,10 +5,10 @@ use Drupal\migrateexport\Services\ManageEntities;
 
 function migrateexport_menu() {
   $items = [];
-  $items['migrateexport/entities-definition'] = array(
+  $items['migrateexport/entities-definitions'] = array(
     'title' => "Reupere toutes les definitions d'entites",
     'description' => "Reupere toutes les definitions d'entites",
-    'page callback' => 'migrateexport_entities_definition_callback',
+    'page callback' => 'migrateexport_entities_definitions_callback',
     'access callback' => true
   );
   $items['migrateexport/migrate-export-entities/%'] = array(
@@ -37,6 +37,7 @@ function migrateexport_menu() {
  * @param string $bundle
  */
 function migrateexport_entitity_definition_callback($entity_type_id) {
+  // _addcustom_resquest();
   $ManageEntities = new ManageEntities();
   return drupal_json_output($ManageEntities->loadFullDefinitionOfentity($entity_type_id));
 }
@@ -64,5 +65,19 @@ function migrateexport_site_info_callback() {
 function migrateexport_init() {
   if (str_contains(current_path(), "migrateexport")) {
     drupal_page_is_cacheable(FALSE);
+    _addcustom_resquest();
   }
+}
+
+function _addcustom_resquest() {
+  // Doit etre un paramettre configurable.
+  drupal_add_http_header("Access-Control-Allow-Origin", 'http://you-v10.kksa');
+  drupal_add_http_header("Access-Control-Allow-Headers", 'x-csrf-token', true);
+  drupal_add_http_header("Access-Control-Allow-Headers", 'authorization', true);
+  drupal_add_http_header("Access-Control-Allow-Headers", 'x-allowed-header', true);
+  drupal_add_http_header("Access-Control-Allow-Headers", 'content-disposition', true);
+  drupal_add_http_header("Access-Control-Allow-Headers", 'x-requested-with', true);
+  drupal_add_http_header("Access-Control-Allow-Headers", 'content-type', true);
+  drupal_add_http_header("Access-Control-Allow-Headers", 'request-starttime', true);
+  // drupal_add_http_header("Access-Control-Expose-Headers", '*');
 }
