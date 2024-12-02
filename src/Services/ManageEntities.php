@@ -34,6 +34,7 @@ class ManageEntities {
   public function loadFullDefinitionOfentity(string $entity_type_id) {
     $entity_get_info = $this->LoadAllentities();
     if (!empty($entity_get_info[$entity_type_id])) {
+      dd($entity_get_info[$entity_type_id]);
       $bundles = array_keys($entity_get_info[$entity_type_id]['bundles']);
       return $this->loadResumeEntityType($entity_type_id, $bundles);
     }
