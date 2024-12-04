@@ -11,13 +11,14 @@ function migrateexport_menu() {
     'page callback' => 'migrateexport_entities_definitions_callback',
     'access callback' => true
   );
-  $items['migrateexport/migrate-export-entities/%'] = array(
+  $items['migrateexport/migrate-export-entities/%/%'] = array(
     'title' => "Recupere la definition d'une entité",
     'description' => "Recupere la definition d'une entité, y compris les
   bunbles ...",
     'page callback' => 'migrateexport_entitity_definition_callback',
     'page arguments' => [
-      'entity_type_id' => 2
+      'entity_type_id' => 2,
+      'bundle' => 3
     ],
     'access callback' => true
   );
@@ -36,11 +37,11 @@ function migrateexport_menu() {
  * @param string $entity_type_id
  * @param string $bundle
  */
-function migrateexport_entitity_definition_callback($entity_type_id) {
+function migrateexport_entitity_definition_callback($entity_type_id, $bundle) {
   // /////////////
   // _addcustom_resquest();
   $ManageEntities = new ManageEntities();
-  return drupal_json_output($ManageEntities->loadFullDefinitionOfentity($entity_type_id));
+  return drupal_json_output($ManageEntities->loadFullDefinitionOfentityAndbundle($entity_type_id, $bundle));
 }
 
 /**

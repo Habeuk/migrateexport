@@ -34,25 +34,64 @@ class ManageEntities {
   public function loadFullDefinitionOfentity(string $entity_type_id) {
     $entity_get_info = $this->LoadAllentities();
     if (!empty($entity_get_info[$entity_type_id])) {
-      dd($entity_get_info[$entity_type_id]);
-      $bundles = array_keys($entity_get_info[$entity_type_id]['bundles']);
-      return $this->loadResumeEntityType($entity_type_id, $bundles);
+      $bundles = [];
+      foreach ($entity_get_info[$entity_type_id]['bundles'] as $k => $val) {
+        $bundles[$k] = $val['label'];
+      }
+      $bundle_keys = $entity_get_info[$entity_type_id]['bundle keys'];
+      // $entity_keys = $entity_get_info[$entity_type_id]['entity keys'];
+      $entity_base_type = null;
+      $column_bundle_id = null;
+      if (!empty($bundle_keys['bundle'])) {
+        $entity_base_type = $entity_type_id . '_' . $bundle_keys['bundle'];
+        $column_bundle_id = $bundle_keys['bundle'];
+      }
+      return $this->loadResumeEntityType($entity_type_id, $bundles, $entity_base_type, $column_bundle_id);
     }
     return [];
   }
   
-  protected function loadResumeEntityType($entity_type_id = 'node', $bundles = []) {
+  public function loadFullDefinitionOfentityAndbundle(string $entity_type_id, $bundle) {
+    $entity_get_info = $this->LoadAllentities();
+    if (!empty($entity_get_info[$entity_type_id])) {
+      $bundles = [
+        $bundle => $bundle
+      ];
+      $bundle_keys = $entity_get_info[$entity_type_id]['bundle keys'];
+      $entity_base_type = null;
+      $column_bundle_id = null;
+      if (!empty($bundle_keys['bundle'])) {
+        $entity_base_type = $entity_type_id . '_' . $bundle_keys['bundle'];
+        $column_bundle_id = $bundle_keys['bundle'];
+      }
+      return $this->loadResumeEntityType($entity_type_id, $bundles, $entity_base_type, $column_bundle_id);
+    }
+    return [];
+  }
+  
+  /**
+   * //
+   *
+   * @param string $entity_type_id
+   * @param array $bundles
+   * @param string $entity_base_type
+   * @return []
+   */
+  protected function loadResumeEntityType($entity_type_id = 'node', $bundles = [], $entity_base_type = null, $column_bundle_id = null) {
     $results = [];
     if ($bundles) {
       foreach ($bundles as $bundle => $label) {
         $query = new \EntityFieldQuery();
         $query->entityCondition('entity_type', $entity_type_id, '=')->propertyCondition('type', $bundle, '=');
+        $result = $query->execute();
         $result = $query->count()->execute();
         $results[$bundle] = [
           'label' => $label,
-          'count' => $result,
+          'count_entities' => $result, // nom de contenu
           'fields' => $this->filterField($entity_type_id, $bundle)
         ];
+        if ($entity_base_type)
+          $results[$bundle]['content'] = $this->getEntityTypeData($bundle, $entity_base_type, $column_bundle_id);
       }
     }
     else {
@@ -67,6 +106,12 @@ class ManageEntities {
       ];
     }
     return $results;
+  }
+  
+  protected function getEntityTypeData($bundle, $entity_base_type, $column_bundle_id) {
+    $query = db_select($entity_base_type, 'nt')->fields('nt')->condition($column_bundle_id, $bundle);
+    $result = $query->execute();
+    return $result->fetchAssoc();
   }
   
   /**
