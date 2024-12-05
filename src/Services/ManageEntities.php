@@ -15,6 +15,13 @@ class ManageEntities {
   protected $entity_get_info = [];
   
   /**
+   * Contient toutes les informations sur la definition des champs.
+   *
+   * @var array
+   */
+  protected $infosAboutFiels = [];
+  
+  /**
    * Retourne toutes les definitions d'entites.
    *
    * @return array
@@ -121,16 +128,21 @@ class ManageEntities {
    * @return array
    */
   protected function filterField($entity_type_id, $bundle) {
-    $fields = field_info_instances($entity_type_id, $bundle);
-    // self::debug($fields, $entity_type_id . '--' . $bundle);
-    $results = [];
-    foreach ($fields as $field_name => $field) {
-      $results[$field_name] = [
-        'label' => $field['label']
-      ];
-      if (isset($field['widget']))
-        $results[$field_name]['widget'] = $field['widget'];
+    $FieldInfo = _field_info_field_cache();
+    $fields = $FieldInfo->getBundleInstances($entity_type_id, $bundle);
+    foreach ($fields as $fieldName => $field) {
+      $fields[$fieldName]['field_type'] = $FieldInfo->getFieldById($field['field_id']);
+      $fields[$fieldName]['extra_fields'] = $FieldInfo->getBundleExtraFields($entity_type_id, $bundle);
     }
-    return $results;
+    return $fields;
+  }
+  
+  protected function getInfoAboutTypeOfField() {
+    if (!$this->infosAboutFiels) {
+      $this->infosAboutFiels = _field_info_collate_types();
+    }
+    $fieldsType = $this->infosAboutFiels['field types'];
+    $fieldsWidgetType = $this->infosAboutFiels['widget types'];
+    $fieldsFormaterType = $this->infosAboutFiels['formatter types'];
   }
 }
