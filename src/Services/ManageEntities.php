@@ -95,7 +95,8 @@ class ManageEntities {
         $results[$bundle] = [
           'label' => $label,
           'count_entities' => $result, // nom de contenu
-          'fields' => $this->filterField($entity_type_id, $bundle)
+          'fields' => $this->filterField($entity_type_id, $bundle),
+          'extra_fields' => $this->getBundleExtraFields($entity_type_id, $bundle)
         ];
         if ($entity_base_type)
           $results[$bundle]['content'] = $this->getEntityTypeData($bundle, $entity_base_type, $column_bundle_id);
@@ -108,8 +109,9 @@ class ManageEntities {
       $result = $query->count()->execute();
       $results[$bundle] = [
         'label' => $label,
-        'count' => $result,
-        'fields' => $this->filterField($entity_type_id, $bundle)
+        'count_entities' => $result,
+        'fields' => $this->filterField($entity_type_id, $bundle),
+        'extra_fields' => $this->getBundleExtraFields($entity_type_id, $bundle)
       ];
     }
     return $results;
@@ -119,6 +121,11 @@ class ManageEntities {
     $query = db_select($entity_base_type, 'nt')->fields('nt')->condition($column_bundle_id, $bundle);
     $result = $query->execute();
     return $result->fetchAssoc();
+  }
+  
+  protected function getBundleExtraFields($entity_type_id, $bundle) {
+    $FieldInfo = _field_info_field_cache();
+    return $FieldInfo->getBundleExtraFields($entity_type_id, $bundle);
   }
   
   /**
@@ -132,7 +139,6 @@ class ManageEntities {
     $fields = $FieldInfo->getBundleInstances($entity_type_id, $bundle);
     foreach ($fields as $fieldName => $field) {
       $fields[$fieldName]['field_type'] = $FieldInfo->getFieldById($field['field_id']);
-      $fields[$fieldName]['extra_fields'] = $FieldInfo->getBundleExtraFields($entity_type_id, $bundle);
     }
     return $fields;
   }
