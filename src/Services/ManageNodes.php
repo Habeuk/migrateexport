@@ -26,35 +26,6 @@ class ManageNodes extends ManageEntities {
   protected $listTypes = [];
   
   /**
-   * il faudra tester cette fonction et voir ce quelle renvoie vs
-   * loadFullDefinitionOfentity.
-   *
-   * @param string $entity_type_id
-   * @param string $bundle
-   * @return array
-   */
-  function loadEntities(string $entity_type_id, string $bundle) {
-    $query = new \EntityFieldQuery();
-    $query->entityCondition('entity_type', $entity_type_id, '=')->propertyCondition('type', $bundle, '=');
-    $rresults = $query->execute(\PDO::FETCH_ASSOC);
-    $column = null;
-    $entities = [];
-    if ($entity_type_id == 'node')
-      $column = 'nid';
-    if (!empty($rresults[$entity_type_id]) && $column) {
-      $ids = [];
-      foreach ($rresults[$entity_type_id] as $ent) {
-        $ids[] = $ent->{$column};
-      }
-      $conditions = [];
-      $reset = false;
-      $entities = entity_load($entity_type_id, $ids, $conditions, $reset);
-    }
-    // $this->debug($entities, 'loadEntities', true);
-    return $entities;
-  }
-  
-  /**
    * Charge tous les types de nodes.
    */
   function loadAllTypes() {

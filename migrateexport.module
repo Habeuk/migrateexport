@@ -28,7 +28,27 @@ function migrateexport_menu() {
     'page callback' => 'migrateexport_site_info_callback',
     'access callback' => true
   ];
+  $items['migrateexport/export-import-entities/load-entitties/%/%/%/%'] = [
+    'title' => 'Load entitties',
+    'description' => 'Books Information',
+    'page callback' => 'migrateexport_load_entities',
+    'access callback' => true,
+    'page arguments' => [
+      'entity_type_id' => 3,
+      'bundle' => 4,
+      'page' => 5,
+      'length' => 6
+    ]
+  ];
   return $items;
+}
+
+/**
+ * --
+ */
+function migrateexport_load_entities($entity_type_id, $bundle, $page, $length) {
+  $ManageEntities = new ManageEntities();
+  return drupal_json_output($ManageEntities->loadEntities($entity_type_id, $bundle, $page, $length));
 }
 
 /**
