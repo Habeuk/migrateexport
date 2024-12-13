@@ -167,7 +167,11 @@ class ManageEntities {
     $FieldInfo = _field_info_field_cache();
     $fields = $FieldInfo->getBundleInstances($entity_type_id, $bundle);
     foreach ($fields as $fieldName => $field) {
-      $fields[$fieldName]['field_type'] = $FieldInfo->getFieldById($field['field_id']);
+      $fieldType = $FieldInfo->getFieldById($field['field_id']);
+			if($fieldType["type"] == "multifield"){
+				$fieldType['sub_fields'] = $this->filterField("multifield", $fieldName);
+			}
+			$fields[$fieldName]['field_type'] = $fieldType;
     }
     return $fields;
   }

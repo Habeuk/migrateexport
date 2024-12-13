@@ -94,7 +94,6 @@ function migrateexport_init() {
     'http://impact.local',
     'http://you.local'
   ];
-
   if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
     drupal_add_http_header('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN']);
   }
@@ -102,7 +101,11 @@ function migrateexport_init() {
 
 function _addcustom_resquest() {
   // Doit etre un paramettre configurable.
-  drupal_add_http_header("Access-Control-Allow-Origin", ['http://you-v10.kksa', 'http://impact.local']);
+  drupal_add_http_header("Access-Control-Allow-Origin", [
+    'http://you-v10.kksa',
+    'http://impact.local',
+    'http://you-test-v10.kksa'
+  ]);
   drupal_add_http_header("Access-Control-Allow-Headers", 'x-csrf-token', true);
   drupal_add_http_header("Access-Control-Allow-Headers", 'authorization', true);
   drupal_add_http_header("Access-Control-Allow-Headers", 'x-allowed-header', true);
@@ -110,5 +113,4 @@ function _addcustom_resquest() {
   drupal_add_http_header("Access-Control-Allow-Headers", 'x-requested-with', true);
   drupal_add_http_header("Access-Control-Allow-Headers", 'content-type', true);
   drupal_add_http_header("Access-Control-Allow-Headers", 'request-starttime', true);
-  // drupal_add_http_header("Access-Control-Expose-Headers", '*');
 }
