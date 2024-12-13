@@ -89,23 +89,18 @@ function migrateexport_init() {
     drupal_page_is_cacheable(FALSE);
     _addcustom_resquest();
   }
-  $allowed_origins = [
-    'http://you-v10.kksa',
-    'http://impact.local',
-    'http://you.local'
-  ];
-  if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
-    drupal_add_http_header('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN']);
-  }
 }
 
 function _addcustom_resquest() {
-  // Doit etre un paramettre configurable.
-  drupal_add_http_header("Access-Control-Allow-Origin", [
+  $allowed_origins = [
     'http://you-v10.kksa',
     'http://impact.local',
-    'http://you-test-v10.kksa'
-  ]);
+    'http://you-test-v10.kksa',
+    'http://you.local'
+  ];
+  // Doit etre un paramettre configurable.
+  if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins))
+    drupal_add_http_header("Access-Control-Allow-Origin", $_SERVER['HTTP_ORIGIN']);
   drupal_add_http_header("Access-Control-Allow-Headers", 'x-csrf-token', true);
   drupal_add_http_header("Access-Control-Allow-Headers", 'authorization', true);
   drupal_add_http_header("Access-Control-Allow-Headers", 'x-allowed-header', true);
