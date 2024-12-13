@@ -13,14 +13,14 @@ use Drupal\migrateexport\Services\Exception\ExceptionMigrate;
  */
 class ManageEntities {
   protected $entity_get_info = [];
-  
+
   /**
    * Contient toutes les informations sur la definition des champs.
    *
    * @var array
    */
   protected $infosAboutFiels = [];
-  
+
   /**
    * il faudra tester cette fonction et voir ce quelle renvoie vs
    * loadFullDefinitionOfentity.
@@ -49,7 +49,7 @@ class ManageEntities {
     // $this->debug($entities, 'loadEntities', true);
     return $entities;
   }
-  
+
   /**
    * Retourne toutes les definitions d'entites.
    *
@@ -60,7 +60,7 @@ class ManageEntities {
       $this->entity_get_info = entity_get_info();
     return $this->entity_get_info;
   }
-  
+
   /**
    * Recupere toutes la definition de l'entité.
    *
@@ -86,7 +86,7 @@ class ManageEntities {
     }
     return [];
   }
-  
+
   public function loadFullDefinitionOfentityAndbundle(string $entity_type_id, $bundle) {
     $entity_get_info = $this->LoadAllentities();
     if (!empty($entity_get_info[$entity_type_id])) {
@@ -104,7 +104,7 @@ class ManageEntities {
     }
     return [];
   }
-  
+
   /**
    * //
    *
@@ -130,8 +130,7 @@ class ManageEntities {
         if ($entity_base_type)
           $results[$bundle]['content'] = $this->getEntityTypeData($bundle, $entity_base_type, $column_bundle_id);
       }
-    }
-    else {
+    } else {
       $bundle = $entity_type_id;
       $query = new \EntityFieldQuery();
       $query->entityCondition('entity_type', $entity_type_id, '=');
@@ -145,18 +144,18 @@ class ManageEntities {
     }
     return $results;
   }
-  
+
   protected function getEntityTypeData($bundle, $entity_base_type, $column_bundle_id) {
     $query = db_select($entity_base_type, 'nt')->fields('nt')->condition($column_bundle_id, $bundle);
     $result = $query->execute();
     return $result->fetchAssoc();
   }
-  
+
   protected function getBundleExtraFields($entity_type_id, $bundle) {
     $FieldInfo = _field_info_field_cache();
     return $FieldInfo->getBundleExtraFields($entity_type_id, $bundle);
   }
-  
+
   /**
    *
    * @param string $entity_type_id
@@ -167,11 +166,15 @@ class ManageEntities {
     $FieldInfo = _field_info_field_cache();
     $fields = $FieldInfo->getBundleInstances($entity_type_id, $bundle);
     foreach ($fields as $fieldName => $field) {
-      $fields[$fieldName]['field_type'] = $FieldInfo->getFieldById($field['field_id']);
+      $fieldType = $FieldInfo->getFieldById($field['field_id']);
+      if ($fieldType["type"] == "multifield") {
+        $fieldType['sub_fields'] = $this->filterField("multifield", $fieldName);
+      }
+      $fields[$fieldName]['field_type'] = $fieldType;
     }
     return $fields;
   }
-  
+
   protected function getInfoAboutTypeOfField() {
     if (!$this->infosAboutFiels) {
       $this->infosAboutFiels = _field_info_collate_types();
