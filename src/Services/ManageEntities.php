@@ -47,6 +47,7 @@ class ManageEntities {
       $entities = entity_load($entity_type_id, $ids, $conditions, $reset);
     }
     // $this->debug($entities, 'loadEntities', true);
+    
     return $entities;
   }
   
@@ -58,7 +59,6 @@ class ManageEntities {
   public function LoadAllentities() {
     if (!$this->entity_get_info)
       $this->entity_get_info = entity_get_info();
-    
     return $this->entity_get_info;
   }
   
