@@ -31,12 +31,24 @@ class ManageEntities {
    */
   function loadEntities(string $entity_type_id, string $bundle, $start = 0, $length = 50) {
     $query = new \EntityFieldQuery();
-    $query->entityCondition('entity_type', $entity_type_id, '=')->propertyCondition('type', $bundle, '=')->range($start, $length);
+    $query->entityCondition('entity_type', $entity_type_id, '=');
+    if ('taxonomy_term' == $entity_type_id) {
+      $query_select = db_select('taxonomy_vocabulary', "vb");
+      $query_select->fields("vb", [
+        'machine_name',
+        'vid'
+      ]);
+      $query_select->condition('machine_name', $bundle);
+      $result_select = $query_select->execute()->fetchAssoc();
+      if (isset($result_select['vid'])) {
+        $query->propertyCondition('vid', $result_select['vid'], '=');
+      }
+    }
+    else
+      $query->propertyCondition('type', $bundle, '=');
+    $query->range($start, $length);
     $rresults = $query->execute(\PDO::FETCH_ASSOC);
-    $column = 'id';
-    $entities = [];
-    if ($entity_type_id == 'node')
-      $column = 'nid'; // il faut rendre ceci dynamique.
+    $column = $this->getEntityColumnId($entity_type_id);
     if (!empty($rresults[$entity_type_id]) && $column) {
       $ids = [];
       foreach ($rresults[$entity_type_id] as $ent) {
@@ -49,6 +61,14 @@ class ManageEntities {
     // $this->debug($entities, 'loadEntities', true);
     
     return $entities;
+  }
+  
+  protected function getEntityColumnId($entity_type_id) {
+    $entites = $this->LoadAllentities();
+    if (!empty($entites[$entity_type_id]['entity keys'])) {
+      return $entites[$entity_type_id]['entity keys']['id'];
+    }
+    return null;
   }
   
   /**
