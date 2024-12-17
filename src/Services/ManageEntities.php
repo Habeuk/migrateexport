@@ -30,6 +30,7 @@ class ManageEntities {
    * @return array
    */
   function loadEntities(string $entity_type_id, string $bundle, $start = 0, $length = 50) {
+    $column = $this->getEntityColumnId($entity_type_id);
     $query = new \EntityFieldQuery();
     $query->entityCondition('entity_type', $entity_type_id, '=');
     if ('taxonomy_term' == $entity_type_id) {
@@ -46,9 +47,10 @@ class ManageEntities {
     }
     else
       $query->propertyCondition('type', $bundle, '=');
+    $query->propertyOrderBy($column, 'ASC');
     $query->range($start, $length);
     $rresults = $query->execute(\PDO::FETCH_ASSOC);
-    $column = $this->getEntityColumnId($entity_type_id);
+    
     if (!empty($rresults[$entity_type_id]) && $column) {
       $ids = [];
       foreach ($rresults[$entity_type_id] as $ent) {
