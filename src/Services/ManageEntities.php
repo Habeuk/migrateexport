@@ -24,6 +24,24 @@ class ManageEntities {
   function loadEntity(string $entity_type_id, string $bundle, $entity_id) {
     $column = $this->getEntityColumnId($entity_type_id);
     $query = new \EntityFieldQuery();
+    if ('multifield' == $entity_type_id) {
+      $column = $this->getEntityColumnId("node");
+      $query->entityCondition('entity_type', 'node', '=');
+      $query->fieldCondition($bundle);
+      $query->propertyCondition($column, $entity_id);
+      $results = $query->execute();
+      $ids = [];
+      foreach ($results['node'] as $ent) {
+        $ids[] = $ent->{$column};
+      }
+      $conditions = [];
+      $reset = false;
+      $entities = entity_load('node', $ids, $conditions, $reset);
+      if ($entities) {
+        return reset($entities);
+      }
+      return false;
+    }
     $query->entityCondition('entity_type', $entity_type_id, '=');
     $query->propertyCondition($column, $entity_id);
     $rresults = $query->execute(\PDO::FETCH_ASSOC);
@@ -228,15 +246,12 @@ class ManageEntities {
           }
         }
         elseif ('multifield' == $entity_type_id) {
-          // $fields_ids = \multifield_get_fields($bundle);
-          
           $results[$bundle] = [
             'label' => $label,
             'count_entities' => $this->loadDataMultified($bundle, true),
             'fields' => $this->filterField($entity_type_id, $bundle),
             'extra_fields' => []
           ];
-          
           return $results;
         }
         else {
@@ -251,8 +266,8 @@ class ManageEntities {
           'fields' => $this->filterField($entity_type_id, $bundle),
           'extra_fields' => $this->getBundleExtraFields($entity_type_id, $bundle)
         ];
-        if ($entity_base_type && !in_array($entity_type_id, [
-          'taxonomy_term'
+        if ($entity_base_type && in_array($entity_type_id, [
+          'node'
         ]))
           $results[$bundle]['content'] = $this->getEntityTypeData($bundle, $entity_base_type, $column_bundle_id);
       }
