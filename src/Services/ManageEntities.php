@@ -21,6 +21,27 @@ class ManageEntities {
    */
   protected $infosAboutFiels = [];
   
+  function loadEntity(string $entity_type_id, string $bundle, $entity_id) {
+    $column = $this->getEntityColumnId($entity_type_id);
+    $query = new \EntityFieldQuery();
+    $query->entityCondition('entity_type', $entity_type_id, '=');
+    $query->propertyCondition($column, $entity_id);
+    $rresults = $query->execute(\PDO::FETCH_ASSOC);
+    if (!empty($rresults[$entity_type_id]) && $column) {
+      $ids = [];
+      foreach ($rresults[$entity_type_id] as $ent) {
+        $ids[] = $ent->{$column};
+      }
+      $conditions = [];
+      $reset = false;
+      $entities = entity_load($entity_type_id, $ids, $conditions, $reset);
+      if ($entities) {
+        return reset($entities);
+      }
+    }
+    return false;
+  }
+  
   /**
    * il faudra tester cette fonction et voir ce quelle renvoie vs
    * loadFullDefinitionOfentity.
@@ -32,8 +53,8 @@ class ManageEntities {
   function loadEntities(string $entity_type_id, string $bundle, $start = 0, $length = 50) {
     $column = $this->getEntityColumnId($entity_type_id);
     $query = new \EntityFieldQuery();
-    $query->entityCondition('entity_type', $entity_type_id, '=');
     if ('taxonomy_term' == $entity_type_id) {
+      $query->entityCondition('entity_type', $entity_type_id, '=');
       $query_select = db_select('taxonomy_vocabulary', "vb");
       $query_select->fields("vb", [
         'machine_name',
@@ -45,8 +66,27 @@ class ManageEntities {
         $query->propertyCondition('vid', $result_select['vid'], '=');
       }
     }
-    else
+    elseif ('multifield' == $entity_type_id) {
+      $column = $this->getEntityColumnId("node");
+      $query->entityCondition('entity_type', 'node', '=');
+      $query->fieldCondition($bundle);
+      $query->propertyOrderBy($column, 'ASC');
+      $query->range($start, $length);
+      $results = $query->execute();
+      $ids = [];
+      foreach ($results['node'] as $ent) {
+        $ids[] = $ent->{$column};
+      }
+      $conditions = [];
+      $reset = false;
+      $entities = entity_load('node', $ids, $conditions, $reset);
+      return $entities;
+    }
+    else {
+      $query->entityCondition('entity_type', $entity_type_id, '=');
       $query->propertyCondition('type', $bundle, '=');
+    }
+    //
     $query->propertyOrderBy($column, 'ASC');
     $query->range($start, $length);
     $rresults = $query->execute(\PDO::FETCH_ASSOC);
@@ -61,7 +101,9 @@ class ManageEntities {
       $entities = entity_load($entity_type_id, $ids, $conditions, $reset);
     }
     // $this->debug($entities, 'loadEntities', true);
-    
+    if ($GLOBALS['user']->uid == 1) {
+      dd($entities);
+    }
     return $entities;
   }
   
@@ -83,6 +125,19 @@ class ManageEntities {
       $this->entity_get_info = entity_get_info();
     return $this->entity_get_info;
   }
+  
+  /**
+   * On formatte les données pour envoyer vers Drupal10.
+   */
+  // public function LoadFormattersDefinitions() {
+  // $entities = $this->LoadAllentities();
+  // if (!empty($entities['multifield'])) {
+  // $entities['multifield']['bundle keys']['bundle'] = 'type';
+  // $entities['paragraph'] = $entities['multifield'];
+  // unset($entities['multifield']);
+  // }
+  // return $entities;
+  // }
   
   /**
    * Recupere toutes la definition de l'entité.
@@ -150,8 +205,12 @@ class ManageEntities {
    */
   protected function loadResumeEntityType($entity_type_id = 'node', $bundles = [], $entity_base_type = null, $column_bundle_id = null) {
     $results = [];
-    
-    if ($bundles) {
+    // $MultifieldEntityController = new
+    // \MultifieldEntityController($entity_type_id);
+    // $entities = entity_load($entity_type_id);
+    // // dump($entity_type_id, $entities);
+    // dd(\multifield_load_all());
+    if ($entity_type_id) {
       foreach ($bundles as $bundle => $label) {
         $query = new \EntityFieldQuery();
         $query->entityCondition('entity_type', $entity_type_id, '=');
@@ -168,11 +227,24 @@ class ManageEntities {
             $query->propertyCondition('vid', $result_select['vid'], '=');
           }
         }
-        else
+        elseif ('multifield' == $entity_type_id) {
+          // $fields_ids = \multifield_get_fields($bundle);
+          
+          $results[$bundle] = [
+            'label' => $label,
+            'count_entities' => $this->loadDataMultified($bundle, true),
+            'fields' => $this->filterField($entity_type_id, $bundle),
+            'extra_fields' => []
+          ];
+          
+          return $results;
+        }
+        else {
           $query->propertyCondition($column_bundle_id, $bundle, '=');
+        }
+        
         $result = $query->execute();
         $result = $query->count()->execute();
-        
         $results[$bundle] = [
           'label' => $label,
           'count_entities' => $result, // nom de contenu
@@ -197,7 +269,17 @@ class ManageEntities {
         'extra_fields' => $this->getBundleExtraFields($entity_type_id, $bundle)
       ];
     }
+    
     return $results;
+  }
+  
+  protected function loadDataMultified($bundle, $count = true) {
+    $query = new \EntityFieldQuery();
+    // $query->entityCondition('entity_type', 'node', '=');
+    $query->fieldCondition($bundle);
+    if ($count) {
+      return $query->count()->execute();
+    }
   }
   
   protected function getEntityTypeData($bundle, $entity_base_type, $column_bundle_id) {
