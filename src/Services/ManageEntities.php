@@ -21,6 +21,25 @@ class ManageEntities {
    */
   protected $infosAboutFiels = [];
   
+  /**
+   * Charge unfichier par son id.
+   *
+   * @param string $fid
+   * @return array|boolean
+   */
+  function loadFile($fid) {
+    /**
+     *
+     * @var Ambiguous $file
+     */
+    $file = file_load($fid);
+    if ($file) {
+      $file->url = file_create_url($file->uri);
+      return $file;
+    }
+    return false;
+  }
+  
   function loadEntity(string $entity_type_id, string $bundle, $entity_id) {
     $column = $this->getEntityColumnId($entity_type_id);
     $query = new \EntityFieldQuery();

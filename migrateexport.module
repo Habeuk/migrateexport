@@ -51,7 +51,21 @@ function migrateexport_menu() {
       'entity_id' => 5
     ]
   ];
+  $items['migrateexport/export-import-entity/load-file/%'] = [
+    'title' => 'Load entitties',
+    'description' => 'Books Information',
+    'page callback' => 'migrateexport_load_file',
+    'access callback' => true,
+    'page arguments' => [
+      'fid' => 3
+    ]
+  ];
   return $items;
+}
+
+function migrateexport_load_file($fid) {
+  $ManageNodes = new ManageNodes();
+  return drupal_json_output($ManageNodes->loadFile($fid));
 }
 
 function migrateexport_load_entity($entity_type_id, $bundle, $entity_id) {
