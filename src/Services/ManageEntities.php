@@ -137,11 +137,37 @@ class ManageEntities {
       $reset = false;
       $entities = entity_load($entity_type_id, $ids, $conditions, $reset);
     }
-    // $this->debug($entities, 'loadEntities', true);
-    if ($GLOBALS['user']->uid == 1) {
-      dd($entities);
+    /**
+     * On ajoute le terme parent au valeur de taxo.
+     */
+    if ('taxonomy_term' == $entity_type_id) {
+      foreach ($entities as $tid => $entity) {
+        $parent_tid = $this->getParentTid($entity->tid);
+        $entities[$tid]->parent = [
+          'und' => [
+            [
+              'target_id' => $parent_tid
+            ]
+          ]
+        ];
+      }
     }
     return $entities;
+  }
+  
+  protected function getParentTid($tid) {
+    $query = db_select('taxonomy_term_data', 't');
+    $query->join('taxonomy_term_hierarchy', 'h', 'h.parent = t.tid');
+    $query->addField('t', 'tid');
+    $query->condition('h.tid', $tid);
+    $query->addTag('taxonomy_term_access');
+    $query->orderBy('t.weight');
+    $query->orderBy('t.name');
+    $tid = $query->execute()->fetchAssoc();
+    if ($tid) {
+      return $tid['tid'];
+    }
+    return 0;
   }
   
   protected function getEntityColumnId($entity_type_id) {
