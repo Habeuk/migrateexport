@@ -72,6 +72,21 @@ class ManageEntities {
       $conditions = [];
       $reset = false;
       $entities = entity_load($entity_type_id, $ids, $conditions, $reset);
+      /**
+       * On ajoute le terme parent au valeur de taxo.
+       */
+      if ('taxonomy_term' == $entity_type_id) {
+        foreach ($entities as $tid => $entity) {
+          $parent_tid = $this->getParentTid($entity->tid);
+          $entities[$tid]->parent = [
+            'und' => [
+              [
+                'target_id' => $parent_tid
+              ]
+            ]
+          ];
+        }
+      }
       if ($entities) {
         return reset($entities);
       }
