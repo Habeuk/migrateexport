@@ -1,4 +1,5 @@
 <?php
+
 use Stephane888\Debug\debugLog;
 use Drupal\migrateexport\Services\ManageNodes;
 use Drupal\migrateexport\Services\ManageEntities;
@@ -122,12 +123,6 @@ function migrateexport_init() {
 }
 
 function _addcustom_resquest() {
-  $allowed_origins = [
-    'http://you-v10.kksa',
-    'http://impact.local',
-    'http://you-test-v10.kksa',
-    'http://you.local'
-  ];
   // Doit etre un paramettre configurable.
   if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins))
     drupal_add_http_header("Access-Control-Allow-Origin", $_SERVER['HTTP_ORIGIN']);

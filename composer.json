@@ -13,6 +13,7 @@
   "require": {
     "drupal/restful": "^2.17",
     "kint-php/kint": "^3.0",
-    "drupal/autoload": "^2.0"
+    "drupal/autoload": "^2.0",
+    "drupal/cors": "^1.3"
   }
 }
