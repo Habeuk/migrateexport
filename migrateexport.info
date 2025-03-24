@@ -3,7 +3,6 @@ description = Permet d'exposer les données pour la migration.
 core = 7.x
 
 dependencies[] = autoload
-dependencies[] = restful
 dependencies[] = cors
 autoload = TRUE
 
