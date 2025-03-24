@@ -116,7 +116,7 @@ function migrateexport_site_info_callback() {
  * Desactive le cache sur les routes suivantes.
  */
 function migrateexport_init() {
-  if (str_contains(current_path(), "migrateexport")) {
+  if (strpos(current_path(), "migrateexport") !== FALSE) {
     drupal_page_is_cacheable(FALSE);
     _addcustom_resquest();
   }
